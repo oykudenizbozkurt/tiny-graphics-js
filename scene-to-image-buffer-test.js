@@ -17,7 +17,7 @@ class Shadow_Mapping_Test extends Scene_Component
                          box_2: new Cube(),
                          axis:  new Axis_Arrows()
                        }        
-        shapes.box_2.texture_coords = shapes.box_2.texture_coords.map( p => p.times( 2 ) );
+        shapes.box_2.arrays.texture_coord = shapes.box_2.arrays.texture_coord.map( p => p.times( 2 ) );
 
 
         this.webgl_manager = context;      // Save off the Webgl_Manager object that created the scene.
@@ -35,9 +35,9 @@ class Shadow_Mapping_Test extends Scene_Component
         //        Make each Material from the correct shader.  Phong_Shader will work initially, but when 
         //        you get to requirements 6 and 7 you will need different ones.
         this.materials =
-          {  once: context.get_instance( Texture_Rotate   ).material( Color.of( 0,0,0,1 ), 
+          {  once: context.get_instance( Phong_Shader   ).material( Color.of( 0,0,0,1 ), 
                              { ambient: 1, texture: context.get_instance( "assets/rgb.jpg", false ) } ),
-            twice: context.get_instance( Texture_Scroll_X ).material( Color.of( 0,0,0,1 ), 
+            twice: context.get_instance( Phong_Shader ).material( Color.of( 0,0,0,1 ), 
                              { ambient: 1, texture: context.get_instance( "assets/grid.png" ) } )
           }
 
