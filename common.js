@@ -307,7 +307,7 @@ export class Axis_Arrows extends Shape                               // An axis 
 export class Minimal_Shape extends Vertex_Buffer    // The simplest possible Shape – one triangle.  It has 3 vertices, each
 { constructor()                                     // containing two values: a 3D position and a color.
     { super( "position", "color" );
-      this.arrays.position = [ Vec.of(0,0,0), Vec.of(1,0,0), Vec.of(0,1,0) ];   // Describe the where the points of a triangle are in space.
+      this.arrays.position = [ Vec.of(0,0,0), Vec.of(1,0,0), Vec.of(0,1,0) ];   // Describe where the points of a triangle are in space.
       this.arrays.color    = [ Color.of(1,0,0,1), Color.of(0,1,0,1), Color.of(0,0,1,1) ];   // Besides a position, vertices also have a color.      
     }
 }
