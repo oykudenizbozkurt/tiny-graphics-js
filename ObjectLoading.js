@@ -1,6 +1,31 @@
-import {defs, tiny} from './common.js';
+import {defs, tiny} from './examples/common.js';
 // Pull these names into this module's scope for convenience:
-const {vec3, vec4, vec, color, Mat4, Light, Shape, Material, Shader, Texture, Scene} = tiny;
+const {vec3, vec4, vec, color, Mat4, Light, Shape, Textured_Phong} = tiny;
+
+const Bump_Map = defs.Fake_Bump_Map =
+    class Fake_Bump_Map extends Textured_Phong {
+        // **Fake_Bump_Map** Same as Phong_Shader, except adds a line of code to
+        // compute a new normal vector, perturbed according to texture color.
+        fragment_glsl_code() {
+            // ********* FRAGMENT SHADER *********
+            return this.shared_glsl_code() + `
+                varying vec2 f_tex_coord;
+                uniform sampler2D texture;
+        
+                void main(){
+                    // Sample the texture image in the correct place:
+                    vec4 tex_color = texture2D( texture, f_tex_coord );
+                    if( tex_color.w < .01 ) discard;
+                    // Slightly disturb normals based on sampling the same image that was used for texturing:
+                    vec3 bumped_N  = N + tex_color.rgb - .5*vec3(1,1,1);
+                    // Compute an initial (ambient) color:
+                    gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                    // Compute the final color with contributions from lights:
+                    gl_FragColor.xyz += phong_model_lights( normalize( bumped_N ), vertex_worldspace );
+                  } `;
+        }
+    }
+
 
 export class Shape_From_File extends Shape {                                   // **Shape_From_File** is a versatile standalone Shape that imports
                                                                                // all its arrays' data from an .obj 3D model file.
@@ -100,57 +125,5 @@ export class Shape_From_File extends Shape {                                   /
         // attempts to draw the shape before it loads:
         if (this.ready)
             super.draw(context, program_state, model_transform, material);
-    }
-}
-
-export class Obj_File_Demo extends Scene {                           // **Obj_File_Demo** show how to load a single 3D model from an OBJ file.
-                                                                     // Detailed model files can be used in place of simpler primitive-based
-                                                                     // shapes to add complexity to a scene.  Simpler primitives in your scene
-                                                                     // can just be thought of as placeholders until you find a model file
-                                                                     // that fits well.  This demo shows the teapot model twice, with one
-                                                                     // teapot showing off the Fake_Bump_Map effect while the other has a
-                                                                     // regular texture and Phong lighting.
-    constructor() {
-        super();
-        // Load the model file:
-        this.shapes = {"teapot": new Shape_From_File("assets/teapot.obj")};
-
-        // Don't create any DOM elements to control this scene:
-        this.widget_options = {make_controls: false};
-        // Non bump mapped:
-        this.stars = new Material(new defs.Textured_Phong(1), {
-            color: color(.5, .5, .5, 1),
-            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/teapot_custom.png")
-        });
-        // Bump mapped:
-        this.bumps = new Material(new defs.Fake_Bump_Map(1), {
-            color: color(.5, .5, .5, 1),
-            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/stars.png")
-        });
-    }
-
-    display(context, program_state) {
-        const t = program_state.animation_time;
-
-        program_state.set_camera(Mat4.translation(0, 0, -5));    // Locate the camera here (inverted matrix).
-        program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, 1, 500);
-        // A spinning light to show off the bump map:
-        program_state.lights = [new Light(
-            Mat4.rotation(t / 300, 1, 0, 0).times(vec4(3, 2, 10, 1)),
-            color(1, .7, .7, 1), 100000)];
-
-        for (let i of [-1, 1]) {                                       // Spin the 3D model shapes as well.
-            const model_transform = Mat4.rotation(t / 2000, 0, 2, 1)
-                .times(Mat4.translation(2 * i, 0, 0))
-                .times(Mat4.rotation(t / 1500, -1, 2, 0))
-                .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
-            this.shapes.teapot.draw(context, program_state, model_transform, i == 1 ? this.stars : this.bumps);
-        }
-    }
-
-    show_explanation(document_element) {
-        document_element.innerHTML += "<p>This demo loads an external 3D model file of a teapot.  It uses a condensed version of the \"webgl-obj-loader.js\" "
-            + "open source library, though this version is not guaranteed to be complete and may not handle some .OBJ files.  It is contained in the class \"Shape_From_File\". "
-            + "</p><p>One of these teapots is lit with bump mapping.  Can you tell which one?</p>";
     }
 }
