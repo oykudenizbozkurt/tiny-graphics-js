@@ -108,19 +108,19 @@ export class Obj_File_Demo extends Scene {                           // **Obj_Fi
                                                                      // shapes to add complexity to a scene.  Simpler primitives in your scene
                                                                      // can just be thought of as placeholders until you find a model file
                                                                      // that fits well.  This demo shows the teapot model twice, with one
-                                                                     // teapot showing off the Fake_Bump_Map effect while the other has a
+                                                                    // teapot showing off the Fake_Bump_Map effect while the other has a
                                                                      // regular texture and Phong lighting.
     constructor() {
         super();
         // Load the model file:
-        this.shapes = {"teapot": new Shape_From_File("assets/teapot.obj")};
+        this.shapes = {"teapot": new Shape_From_File("assets/house_texture.obj")};
 
         // Don't create any DOM elements to control this scene:
         this.widget_options = {make_controls: false};
         // Non bump mapped:
         this.stars = new Material(new defs.Textured_Phong(1), {
             color: color(.5, .5, .5, 1),
-            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/teapot_custom.png")
+            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture.png")
         });
         // Bump mapped:
         this.bumps = new Material(new defs.Fake_Bump_Map(1), {
