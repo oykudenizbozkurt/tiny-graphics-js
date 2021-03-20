@@ -7,7 +7,8 @@ import {Scene_To_Texture_Demo} from "./examples/scene-to-texture-demo.js"
 import {Surfaces_Demo} from "./examples/surfaces-demo.js"
 import {Text_Demo} from "./examples/text-demo.js"
 import {Transforms_Sandbox} from "./examples/transforms-sandbox.js"
-import {Final} from "./final-project.js";
+import {Final} from "./final-project.js"
+import {HouseScene} from "./ObjectLoading.js";
 
 // Pull these names into this module's scope for convenience:
 const {
@@ -34,14 +35,15 @@ Object.assign(defs,
     {Surfaces_Demo},
     {Text_Demo},
     {Transforms_Sandbox},
-    {Final}
+    {Final},
+    {HouseScene}
 );
 
 // ******************** End extra step
 
 // (Can define Main_Scene's class here)
 
-const Main_Scene = Obj_File_Demo;
+const Main_Scene = HouseScene;
 const Additional_Scenes = [];
 
 export {Main_Scene, Additional_Scenes, Canvas_Widget, Code_Widget, Text_Widget, defs}
