@@ -60,7 +60,6 @@ export class Final extends Scene {
         this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
         let model_transform_3 = model_transform.times(Mat4.translation(0,0.99,-10))
         this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
-
     }
 
 
@@ -87,7 +86,7 @@ export class Final extends Scene {
             this.draw_background(context, program_state)
 
         }else{
-            this.sun_brightness = 10000
+            this.sun_brightness = 1000
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
@@ -106,7 +105,6 @@ export class Final extends Scene {
 
         let t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000
 
-
         if (this.change_time) {
             this.day_night_time = this.day_night_time + 1
             this.day_night(context, program_state)
@@ -118,12 +116,16 @@ export class Final extends Scene {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
-
         this.draw_background(context, program_state)
-        this.draw_house(context, program_state)
+        //this.draw_house(context, program_state)
 
+        let model_transform = Mat4.identity();
+        //this.shapes.roof.draw(context, program_state, model_transform, this.materials.phong.override(hex_color("#ff0000")));
+        this.shapes.house.draw(context, program_state, model_transform, this.materials.house);
     }
 }
+
+
 
 
 class Texture_Grass extends Textured_Phong {
