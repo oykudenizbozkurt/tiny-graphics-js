@@ -57,9 +57,9 @@ export class Final extends Scene {
         let model_transform = Mat4.identity();
         model_transform = model_transform.times(Mat4.scale(100,100,1))
         let model_transform_2 = model_transform.times(Mat4.translation(0,-1.01,-10))
-        //this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
+        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
         let model_transform_3 = model_transform.times(Mat4.translation(0,0.99,-10))
-        //this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
+        this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
 
     }
 
@@ -104,7 +104,7 @@ export class Final extends Scene {
 
         let t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000
 
-/*
+
         if (this.change_time) {
             this.day_night_time = this.day_night_time + 1
             this.day_night(context, program_state)
@@ -115,7 +115,7 @@ export class Final extends Scene {
         } else {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
-*/
+
 
         this.draw_background(context, program_state)
         this.draw_house(context, program_state)

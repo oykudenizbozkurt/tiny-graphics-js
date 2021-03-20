@@ -1,7 +1,7 @@
 import {defs, tiny} from './examples/common.js';
 // Pull these names into this module's scope for convenience:
-const {vec3, vec4, vec, color, Mat4, Light, Shape, Texture, Scene, Material} = tiny;
-
+const {vec3, vec4, vec, color, Mat4, Light, Shape, Texture,
+    Scene, Material,hex_color, Textured_Phong} = tiny;
 
 export class Shape_From_File extends Shape {                                   // **Shape_From_File** is a versatile standalone Shape that imports
                                                                                // all its arrays' data from an .obj 3D model file.
@@ -123,6 +123,18 @@ export class HouseScene extends Scene {                           // **Obj_File_
             ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture_new.png")
         });
 
+        this.texture_grass = new Material(new Texture(), {
+            color: hex_color("#000000"),
+            ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
+            texture: new Texture("assets/grass.jpg","NEAREST"),
+        });
+
+        this.texture_sky = new Material(new defs.Textured_Phong(1), {
+            color: hex_color("#000000"),
+            ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
+            texture: new Texture("assets/clouds.jpg","NEAREST"),
+        });
+
 
 
         // Bump mapped:
@@ -152,3 +164,22 @@ export class HouseScene extends Scene {                           // **Obj_File_
         document_element.innerHTML += "<p>House object scene</p>";
     }
 }
+
+/*class Texture_Grass extends Textured_Phong {
+    fragment_glsl_code() {
+        return this.shared_glsl_code() + `
+            varying vec2 f_tex_coord;
+            uniform sampler2D texture;
+            uniform float animation_time;
+            
+            void main(){
+                // Sample the texture image in the correct place:
+                vec4 tex_color = texture2D( texture, vec2(f_tex_coord.x*20.0, f_tex_coord.y*20.0));
+                if( tex_color.w < .01 ) discard;
+                                                                         // Compute an initial (ambient) color:
+                gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                                                                         // Compute the final color with contributions from lights:
+                gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
+        } `;
+    }
+}*/
