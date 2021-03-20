@@ -69,6 +69,8 @@ export class Final extends Scene {
 
         this.shapes.house.draw(context, program_state, Mat4.identity().times(
             Mat4.rotation(Math.PI / 6, 0, 1, 0)
+        ).times(
+            Mat4.scale(4, 4, 4)
         ), this.materials.house);
     }
 
