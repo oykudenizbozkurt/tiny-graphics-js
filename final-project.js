@@ -18,22 +18,12 @@ export class Final extends Scene {
         this.shapes = {
             box_1: new Cube(),
             roof: new Cone_Tip(),
-            house: new Shape_From_File('./assets/Blender Files/house.blend'),
+            house: new Shape_From_File("assets/house_updated.obj")
         }
 
         this.materials = {
             phong: new Material(new Textured_Phong(), {
                 color: hex_color("#ffffff"),}),
-            house: new Material(new Textured_Phong(), {
-                color: hex_color("#000000"),
-                ambient: 1, diffusivity: 0.9, specularity: 0.1,
-                texture: new Shape_From_File("./assets/Blender Files/house_texture.blend"),
-            }),
-            texture_house: new Material(new Textured_Phong(), {
-                color: hex_color("#000000"),
-                ambient: 1, diffusivity: 0.9, specularity: 0.1,
-                texture: new Texture("assets/house.jpg","NEAREST"),
-            }),
             texture_grass: new Material(new Texture_Grass(), {
                 color: hex_color("#000000"),
                 ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
@@ -44,6 +34,9 @@ export class Final extends Scene {
                 ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
                 texture: new Texture("assets/clouds.jpg","NEAREST"),
             }),
+            house: new Material(new defs.Textured_Phong(1), {
+                ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture_new.png")
+            })
         }
         this.amb = 0.9
         this.f = 0.0015
@@ -62,26 +55,21 @@ export class Final extends Scene {
     draw_background(context, program_state) {
 
         let model_transform = Mat4.identity();
-        // this.shapes.axis.draw(context, program_state, model_transform, this.materials.phong.override({color: hex_color("#ffff00")}));
         model_transform = model_transform.times(Mat4.scale(100,100,1))
         let model_transform_2 = model_transform.times(Mat4.translation(0,-1.01,-10))
-        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
+        //this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
         let model_transform_3 = model_transform.times(Mat4.translation(0,0.99,-10))
-        this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
+        //this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
 
     }
 
 
     draw_house(context, program_state) {
+        const t = program_state.animation_time;
 
-        let model_transform = Mat4.identity();
-        let model_transform_2 = model_transform.times(Mat4.translation(-3,-1.005,0))
-        model_transform_2 = model_transform_2.times(Mat4.scale(2,1.5,1))
-        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_house);
-        //let model_transform_3 = model_transform.times(Mat4.translation(-3,0.995,0))
-        //model_transform_3 = model_transform_3.times(Mat4.scale(2,1,1))
-        //this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.phong.override({color: hex_color("#ffc0cb")}));
-
+        this.shapes.house.draw(context, program_state, Mat4.identity().times(
+            Mat4.rotation(Math.PI / 6, 0, 1, 0)
+        ), this.materials.house);
     }
 
 
@@ -97,7 +85,7 @@ export class Final extends Scene {
             this.draw_background(context, program_state)
 
         }else{
-            this.sun_brightness = 1000
+            this.sun_brightness = 10000
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
@@ -116,6 +104,7 @@ export class Final extends Scene {
 
         let t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000
 
+/*
         if (this.change_time) {
             this.day_night_time = this.day_night_time + 1
             this.day_night(context, program_state)
@@ -126,13 +115,11 @@ export class Final extends Scene {
         } else {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
+*/
 
         this.draw_background(context, program_state)
-        //this.draw_house(context, program_state)
+        this.draw_house(context, program_state)
 
-        let model_transform = Mat4.identity();
-        //this.shapes.roof.draw(context, program_state, model_transform, this.materials.phong.override(hex_color("#ff0000")));
-        this.shapes.house.draw(context, program_state, model_transform, this.materials.house);
     }
 }
 

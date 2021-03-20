@@ -123,6 +123,8 @@ export class HouseScene extends Scene {                           // **Obj_File_
             ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture_new.png")
         });
 
+
+
         // Bump mapped:
         this.bumps = new Material(new defs.Fake_Bump_Map(1), {
             color: color(.5, .5, .5, 1),
