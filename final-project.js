@@ -43,7 +43,7 @@ export class Final extends Scene {
         this.f = 0.0015
         this.day_night_time = 0
         this.sun_position = vec4(10, 10, 10, 1);
-        this.sun_brightness = 1000
+        this.sun_brightness = 5000
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
