@@ -35,7 +35,8 @@ export class Final extends Scene {
                 texture: new Texture("assets/clouds.jpg","NEAREST"),
             }),
             house: new Material(new defs.Textured_Phong(1), {
-                ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture_new.png")
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/HouseTexture_new.png")
             })
         }
         this.amb = 0.9
@@ -56,13 +57,11 @@ export class Final extends Scene {
 
 
     draw_house(context, program_state) {
-        const t = program_state.animation_time;
-
         this.shapes.house.draw(context, program_state, Mat4.identity().times(
             Mat4.rotation(Math.PI / 6, 0, 1, 0)
         ).times(
             Mat4.scale(4, 4, 4)
-        ), this.materials.house);
+        ), this.materials.house.override({ambient: this.sun_brightness / 10000 + .5}));
     }
 
     draw_background(context, program_state) {
@@ -88,15 +87,16 @@ export class Final extends Scene {
         let y = 20*Math.sin(2*Math.PI*this.f*this.day_night_time)
 
         this.sun_position = vec4(x, y, 10, 1);
-        if (y<-4){
+/*        if (y<-4){
             this.sun_brightness = 0
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
-            this.draw_background(context, program_state)
 
         }else{
             this.sun_brightness = 1000
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
-        }
+        }*/
+        this.sun_brightness = (y + 20) * 5000 / 40;
+        program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
 
 
     }
