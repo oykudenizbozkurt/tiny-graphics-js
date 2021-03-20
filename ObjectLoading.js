@@ -154,9 +154,11 @@ export class HouseScene extends Scene {                           // **Obj_File_
             Mat4.rotation(t / 300, 1, 0, 0).times(vec4(3, 2, 10, 1)),
             color(1, .7, .7, 1), 100000)];
 
-        this.shapes.house.draw(context, program_state, Mat4.identity().times(
-            Mat4.rotation(Math.PI / 6, 0, 1, 0)
-        ), this.house);
+        this.shapes.house.draw(context, program_state, Mat4.identity()
+            .times(Mat4.rotation(Math.PI / 6, 0, 1, 0))
+                .times(Mat4.scale(4, 4, 4))
+
+            , this.house);
 
     }
 

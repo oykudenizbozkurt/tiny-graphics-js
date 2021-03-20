@@ -52,15 +52,7 @@ export class Final extends Scene {
         });
     }
 
-    draw_background(context, program_state) {
 
-        let model_transform = Mat4.identity();
-        model_transform = model_transform.times(Mat4.scale(100,100,1))
-        let model_transform_2 = model_transform.times(Mat4.translation(0,-1.01,-10))
-        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
-        let model_transform_3 = model_transform.times(Mat4.translation(0,0.99,-10))
-        this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
-    }
 
 
     draw_house(context, program_state) {
@@ -71,6 +63,22 @@ export class Final extends Scene {
         ).times(
             Mat4.scale(4, 4, 4)
         ), this.materials.house);
+    }
+
+    draw_background(context, program_state) {
+
+        let model_transform = Mat4.identity();
+        model_transform = model_transform.times(Mat4.scale(100,100,1))
+
+        let model_transform_3 = model_transform.times(Mat4.translation(0,0,-20))
+        this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
+
+        let model_transform_2 = Mat4.translation(0, -3.8, 0)
+            .times(Mat4.scale(100,1,100))
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+
+        ;
+        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
     }
 
 
@@ -117,11 +125,13 @@ export class Final extends Scene {
         }
 
         this.draw_background(context, program_state)
-        //this.draw_house(context, program_state)
+        this.draw_house(context, program_state)
 
-        let model_transform = Mat4.identity();
+        let model_transform = Mat4.identity()
+            .times(Mat4.rotation(Math.PI / 6, 0, 1, 0))
+            .times(Mat4.scale(4, 4, 4));
         //this.shapes.roof.draw(context, program_state, model_transform, this.materials.phong.override(hex_color("#ff0000")));
-        this.shapes.house.draw(context, program_state, model_transform, this.materials.house);
+
     }
 }
 
