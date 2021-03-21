@@ -145,7 +145,8 @@ export class Final extends Scene {
         this.summer_mp3 = new Audio('sounds/summer.mp3')
         this.autumn_mp3 = new Audio('sounds/autumn.mp3')
         this.winter_mp3 = new Audio('sounds/winter.mp3')
-        this.current_song = null
+        this.current_song = this.summer_mp3;
+        this.current_song_state = this.summer_mp3.play();
     }
 
     make_control_panel() {
