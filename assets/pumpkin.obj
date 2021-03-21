@@ -1,6 +1,6 @@
 # Blender v2.91.0 OBJ File: 'pumpkin.blend'
 # www.blender.org
-mtllib house_texture.mtl
+mtllib pumpkin.mtl
 o Pumpkin
 v 10.558642 -0.075815 0.118096
 v 10.471372 -0.075604 0.195137

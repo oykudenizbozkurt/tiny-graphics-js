@@ -18,7 +18,10 @@ export class Final extends Scene {
         this.shapes = {
             box_1: new Cube(),
             roof: new Cone_Tip(),
-            house: new Shape_From_File("assets/house_updated.obj")
+            house: new Shape_From_File("assets/house_updated.obj"),
+            pumpkin: new Shape_From_File("assets/pumpkin.obj"),
+            snowman: new Shape_From_File("assets/snowman.obj"),
+            surfboard: new Shape_From_File("assets/surfboard.obj")
         }
 
         this.materials = {
@@ -35,6 +38,11 @@ export class Final extends Scene {
                 texture: new Texture("assets/grass.jpg","NEAREST"),
                 bump_map: new Texture("assets/grass_bump.png")
             }),
+            snowy_grass: new Material(new Texture_Grass(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
+                texture: new Texture("assets/snowy_grass.jpg","NEAREST"),
+            }),
             texture_sky: new Material(new Textured_Phong(), {
                 color: hex_color("#000000"),
                 ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
@@ -46,6 +54,11 @@ export class Final extends Scene {
                 texture: new Texture("assets/clouds.jpg","NEAREST"),
                 bump_map: new Texture("assets/clouds_bumped.png")
             }),
+            snowy_sky: new Material(new Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
+                texture: new Texture("assets/snow_clouds.jpg","NEAREST"),
+            }),
             house: new Material(new Textured_Phong(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/HouseTexture_new.png")
@@ -53,6 +66,33 @@ export class Final extends Scene {
             bumped_house: new Material(new Bump_Map_Texture(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/HouseTexture_new.png"),
+                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+            }),
+            pumpkin: new Material(new Textured_Phong(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/pumpkin.png")
+            }),
+            bumped_pumpkin: new Material(new Bump_Map_Texture(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/pumpkin.png"),
+                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+            }),
+            snowman: new Material(new Textured_Phong(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/snowman.png")
+            }),
+            bumped_snowman: new Material(new Bump_Map_Texture(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/snowman.png"),
+                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+            }),
+            surfboard: new Material(new Textured_Phong(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/surfboard.png")
+            }),
+            bumped_surfboard: new Material(new Bump_Map_Texture(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/surfboard.png"),
                 bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
             })
         }
@@ -64,10 +104,13 @@ export class Final extends Scene {
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
         this.house_material = 0;
 
+        this.season = 0;
+        this.change_time = 1;
+
     }
 
     make_control_panel() {
-        this.key_triggered_button("Change Time", ["c"], () => {
+        this.key_triggered_button("Toggle Day/Night Cycle", ["c"], () => {
             this.change_time ^= 1;
         });
         this.key_triggered_button("Toggle Bump Maps", ["b"], () => {
@@ -85,20 +128,75 @@ export class Final extends Scene {
             Mat4.scale(4, 4, 4)
         ), (this.house_material
             ? this.materials.bumped_house : this.materials.house)
-            .override({ambient: this.sun_brightness / 10000 + .5}));
+            .override({ambient: this.sun_brightness / 5000 + .1}));
     }
+
+    draw_pumpkin(context, program_state) {
+        this.shapes.pumpkin.draw(context, program_state, Mat4.identity()
+            .times(
+                Mat4.translation(7, -2, 3)
+            )
+            .times(
+                Mat4.rotation(-10*Math.PI/16, 0, 1, 0)
+        ).times(
+            Mat4.scale(.7, .7, .7)
+        ), (this.house_material
+            ? this.materials.bumped_pumpkin : this.materials.pumpkin)
+            .override({ambient: this.sun_brightness / 5000 + .1}));
+    }
+
+    draw_snowman(context, program_state) {
+        this.shapes.snowman.draw(context, program_state, Mat4.identity()
+            .times(
+                Mat4.translation(7, -.8, 3)
+            )
+            .times(
+                Mat4.rotation(-11*Math.PI/16, 0, 1, 0)
+            ).times(
+                Mat4.scale(1, 1, 1)
+            ), (this.house_material
+            ? this.materials.bumped_snowman : this.materials.snowman)
+            .override({ambient: this.sun_brightness / 5000 + .1}));
+    }
+
+    draw_surfboard(context, program_state) {
+        this.shapes.surfboard.draw(context, program_state, Mat4.identity()
+            .times(
+                Mat4.translation(7, -1.5, 3)
+            )
+            .times(
+                Mat4.rotation(-11*Math.PI/16, 0, 1, 0)
+            ).times(
+                Mat4.scale(1, 1, 1)
+            ), (this.house_material
+            ? this.materials.bumped_surfboard : this.materials.surfboard)
+            .override({ambient: this.sun_brightness / 5000 + .1}));
+    }
+
+
 
     draw_background(context, program_state) {
 
         let model_transform = Mat4.identity();
         model_transform = model_transform.times(Mat4.scale(100,100,1))
 
+        let sky_mat = this.materials.texture_sky;
+        let ground_mat = this.materials.texture_grass;
+        switch (this.season) {
+            case 1:
+                ground_mat = this.materials.fall_ground;
+                break;
+            case 2:
+                sky_mat = this.materials.snowy_sky;
+                ground_mat = this.materials.snowy_grass;
+                break;
+            case 3:
+                ground_mat = this.materials.spring_ground;
+        }
         let model_transform_3 = model_transform.times(Mat4.translation(0,0,-20))
         this.shapes.box_1.draw(context, program_state, model_transform_3,
-            (this.house_material
-                ? this.materials.bumped_sky : this.materials.texture_sky)
-                .override({ambient: this.sun_brightness / 5000 + .1})
-            );
+            sky_mat.override({ambient: this.sun_brightness / 5000 + .1}
+            ));
 
         let model_transform_2 = Mat4.translation(0, -3.8, 0)
             .times(Mat4.scale(100,1,100))
@@ -106,9 +204,7 @@ export class Final extends Scene {
 
         ;
         this.shapes.box_1.draw(context, program_state, model_transform_2,
-            (this.house_material
-            ? this.materials.bumped_grass : this.materials.texture_grass)
-                .override({ambient: this.sun_brightness / 10000 + .5}));
+            ground_mat.override({ambient: this.sun_brightness / 5000 + .1}));
     }
 
 
@@ -136,7 +232,7 @@ export class Final extends Scene {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(Mat4.translation(-1.68, -0.34, -15.35));
+            program_state.set_camera(Mat4.translation(-1.68, -0.34, -20.35));
         }
 
         program_state.projection_transform = Mat4.perspective(
@@ -155,8 +251,15 @@ export class Final extends Scene {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
+        this.season = 0;
+
         this.draw_background(context, program_state)
         this.draw_house(context, program_state)
+
+        //this.draw_pumpkin(context, program_state)
+        //this.draw_snowman(context, program_state);
+        this.draw_surfboard(context, program_state);
+
 
 
     }
