@@ -148,6 +148,8 @@ export class Final extends Scene {
         this.key_triggered_button("Toggle Decoration View", ["v"], () => {
             this.free_camera = false;
             this.decoration_view = ~this.decoration_view;
+
+
         });
 
         this.key_triggered_button("Toggle Free Camera", ["c"], () => {
@@ -368,23 +370,27 @@ export class Final extends Scene {
             if (this.decoration_view){
                 switch(this.season){
                     case 0:
-                        program_state.set_camera(Mat4.translation(-7.07, 0.53, -8.90));
+                        this.attached = () => Mat4.translation(-7.07, 0.53, -8.90);
                         break;
                     case 1:
-                        program_state.set_camera(Mat4.translation(-6, 2, -6.5));
+                        this.attached = () => Mat4.translation(-6, 2, -6.5);
                         break;
                     case 2:
-                        program_state.set_camera(Mat4.translation(-6, 1, -8.5));
+                        this.attached = () => Mat4.translation(-6, 1, -8.5);
                         break;
                     default:
-                        program_state.set_camera(Mat4.translation(-1.68, -0.34, -12.5));
+                        this.attached = () => Mat4.translation(-1.68, -0.34, -12.5);
                         break;
                 }
-                //this.free_camera = true;
             }
             else{
-                program_state.set_camera(Mat4.translation(-1.94, -0.34, -13.87));
-                //this.free_camera = true;
+                this.attached = () => Mat4.translation(-1.94, -0.34, -13.87);
+            }
+            if (!!this.attached) {
+                let camera_pos = this.attached();
+                camera_pos = camera_pos.map( (x,i) => Vector.from( program_state.camera_inverse[i] ).mix( x, .1 ) )
+
+                program_state.set_camera(camera_pos)
             }
         }
 
@@ -416,6 +422,8 @@ export class Final extends Scene {
             default:
                 break;
         }
+
+
 
 
 
