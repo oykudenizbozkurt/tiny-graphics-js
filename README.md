@@ -1,30 +1,58 @@
-# tiny-graphics.js
+Group Project -- Day/Night Cycle and Seasons
+---
 
-This is a small, single file JavaScript utility.  It organizes WebGL programs to be object-oriented and minimally cluttered.  
+__Team Members:__
 
-Writing code with raw JavaScript and WebGL can be repetitive and tedious.  Using frameworks like three.js can create an undesired separation between you and the raw JavaScript and WebGL and common graphics operations you want to learn.  Unlike other frameworks, tiny-graphics.js is purpose-built for education, has small source code, and teaches you how it is made.
+Mudith Mallajosyula, UID 404937201
 
-This tiny library gives your WebGL program access to linear algebra routines, useful UI controls and readouts, and the drawing utilities needed by modern shader-based graphics.  It factors away the repetitive logic of GPU communication into re-usable objects.  The objects can be seamlessly shared between multiple WebGL contexts (drawing regions) on a web page.
+Oyku Deniz Bozkurt, UID
 
-The tiny-graphics.js software library has accompanied UCLA Computer Science's 174a course (Intro to Computer Graphics) since 2016, replacing Edward Angel's supplemental code from his textbook "Interactive Computer Graphics: A Top-Down Approach with WebGL".  Compared to Angel's library, tiny-graphics.js offers more organization and functionality.
 
-This code library accompanies and supports a web project by the same author called "The Encyclopedia of Code", a crowd-sourced repository of WebGL demos and educational tutorials that uses an online editor.
+---
 
-To run a sample using tiny-graphics.js, visit its GitHub Pages link: https://encyclopedia-of-code.github.io/tiny-graphics-js/
+__Introduction__
 
-To see all the demos and edit them:  Open the included "host.bat" or "host.command" file, then open localhost in your browser.  Open Developer Tools and create a workspace for your new folder.  Now you can edit the files, which is necessary to view the different demos.
+Our project explored the passage of time, in both days and seasons. We designed a house sitting on a grassy plain with a cloudy sky behind it; each "day" the sun rises and sets, and over time the "seasons" change, altering the lighting, textures, and features of the landscape.
 
-To select a demo, open and edit main-scene.js.  Assign your choice to the Main_Scene variable.  Your choices for scenes are:
+We also included several "decoration" pieces corresponding to each season; these decorations and the house itself have corresponding bump maps to allow for more intricate textures. 
 
-* Minimal_Webgl_Demo
-* Transforms_Sandbox
-* Axes_Viewer_Test_Scene
-* Inertia_Demo
-* Collision_Demo
-* Many_Lights_Demo
-* Obj_File_Demo
-* Text_Demo
-* Scene_To_Texture_Demo
-* Surfaces_Demo
+Additionally, we added musical accompaniments for each season, which can be controlled by the user.
 
-The code comments in each file should help, especially if you look at the definition of Transforms_Sandbox.  So should the explanations that the demos print on the page.  Enjoy!
+The user has the following control options available:
+
+  * Toggle Bump Maps on and off
+  * Switch between several fixed viewpoints, or a free camera
+  * Toggle the day/night cycle or the seasons cycle
+  * Select a specific season
+  * increase the sun's brightness & the speed of the cycles
+  * Select different music tracks and control them
+
+---
+
+__Advanced Features__
+
+The advanced feature we chose to implement was **Bump Maps**.
+
+We created models and textures in Blender, and then created a second pseudo-texture bump map, also in Blender. This bump map was passed as a secondary texture to the GPU via the custom Bump_Map_Texture class, which extends PhongTexture. This class treats the bump map as a texture and uses the bump vectors corresponding to the texture coordinates to perturb the normals of the fragment shader. This results in more intricate-looking textures and shading without the need for additional vertices or model complexity.
+
+![House texture](./assets/Blender Files/HouseTexture_new.png) ![House bump map](./assets/Blender Files/house_bump_map2.png)
+> original texture (left) vs bump map (right)
+
+---
+
+__References__
+
+
+Thanks very much to the TAs and professors for supplying the template code and library functions.
+
+__Image sources:__
+
+http://jessicatregarth.com/2014/03/spring-sky/
+
+https://www.globaltravelerusa.com/blog/the-floods/dramatic-dark-sky-and-clouds-cloudy-sky-background-black-sky-b/
+
+https://horizon-media.s3-eu-west-1.amazonaws.com/s3fs-public/field/image/clouds-mf.jpg
+
+*All other objects and textures were designed by us using AutoCAD and Blender.*
+
+__Music (Public domain):__
