@@ -128,6 +128,7 @@ export class Final extends Scene {
         this.sun_position = vec4(10, 10, 10, 1);
         this.sun_brightness = 5000
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+
         this.house_material = 0;
 
         this.season = 0;
@@ -138,6 +139,13 @@ export class Final extends Scene {
         this.decoration_view = 0;
         this.free_camera = true;
         this.midday = false;
+
+
+        this.spring_mp3 = new Audio('sounds/spring.mp3')
+        this.summer_mp3 = new Audio('sounds/summer.mp3')
+        this.autumn_mp3 = new Audio('sounds/autumn.mp3')
+        this.winter_mp3 = new Audio('sounds/winter.mp3')
+        this.current_song = null
     }
 
     make_control_panel() {
@@ -208,18 +216,99 @@ export class Final extends Scene {
         this.new_line()
         this.new_line()
 
+
+
+
+        this.key_triggered_button("Spring Music", ["5"], () => {
+            if (this.current_song !== null) {
+                if (this.current_song_state !== undefined) {
+                    this.current_song_state.then(_ => {
+                        this.current_song.pause()
+                        this.current_song.currentTime = 0
+                        this.current_song_state = this.spring_mp3.play()
+                        this.current_song = this.spring_mp3
+                    })
+                }}
+            else {
+                this.current_song_state = this.spring_mp3.play()
+                this.current_song = this.spring_mp3
+            }}
+        );
+        this.key_triggered_button("Summer Music", ["6"], () => {
+            if (this.current_song !== null) {
+                if (this.current_song_state !== undefined) {
+                    this.current_song_state.then(_ => {
+                        this.current_song.pause()
+                        this.current_song.currentTime = 0
+                        this.current_song_state = this.summer_mp3.play()
+                        this.current_song = this.summer_mp3
+                    })
+                }}
+            else {
+                this.current_song_state = this.summer_mp3.play()
+                this.current_song = this.summer_mp3
+            }}
+        );
+        this.key_triggered_button("Autumn Music", ["7"], () => {
+            if (this.current_song !== null) {
+                if (this.current_song_state !== undefined) {
+                    this.current_song_state.then(_ => {
+                        this.current_song.pause()
+                        this.current_song.currentTime = 0
+                        this.current_song_state = this.autumn_mp3.play()
+                        this.current_song = this.autumn_mp3
+                    })
+                }}
+            else {
+                this.current_song_state = this.autumn_mp3.play()
+                this.current_song = this.autumn_mp3
+            }}
+        );
+        this.key_triggered_button("Winter Music", ["8"], () => {
+            if (this.current_song !== null) {
+                if (this.current_song_state !== undefined) {
+                    this.current_song_state.then(_ => {
+                        this.current_song.pause()
+                        this.current_song.currentTime = 0
+                        this.current_song_state = this.winter_mp3.play()
+                        this.current_song = this.winter_mp3
+                    })
+                }}
+            else {
+                this.current_song_state = this.winter_mp3.play()
+                this.current_song = this.winter_mp3
+            }}
+        );
+
+        this.new_line()
+        this.new_line()
+
+        this.key_triggered_button("Pause Audio", ["j"], () => {
+            if (this.current_song !== null && this.current_song_state !== undefined) {
+                this.current_song_state.then(_ => {
+                    this.current_song.pause()
+                })
+            }
+        });
+        this.key_triggered_button("Resume Audio", ["k"], () => {
+            if (this.current_song !== null && this.current_song_state !== undefined) {
+                this.current_song_state.then(_ => {
+                    this.current_song.play()
+                })
+            }
+        });
+
+
+        this.new_line()
+        this.new_line()
+
         this.key_triggered_button("Increase Speed", ["9"], () => {
             this.f = ((this.f < .02) ? this.f + .0005 : .02);
         });
         this.key_triggered_button("Decrease Speed", ["0"], () => {
             this.f = ((this.f > .0005) ? (this.f - .0005) : 0);
         });
-
-
     }
-
-
-
 
     draw_house(context, program_state) {
         this.shapes.house.draw(context, program_state, Mat4.identity().times(
@@ -332,8 +421,6 @@ export class Final extends Scene {
         }*/
         this.sun_brightness = (y + 20) * 5000 / 40;
         program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
-
-
     }
 
     display(context, program_state) {
