@@ -137,52 +137,81 @@ export class Final extends Scene {
         this.change_seasons = 0;
         this.decoration_view = 0;
         this.free_camera = true;
-
+        this.midday = false;
     }
 
     make_control_panel() {
-        this.key_triggered_button("Toggle Bump Maps", [""], () => {
+        this.key_triggered_button("Toggle Bump Maps", ["m"], () => {
             this.house_material = ~this.house_material;
         });
-        this.key_triggered_button("Toggle Day/Night Cycle", [""], () => {
-            this.change_time ^= 1;
-        });
-        this.key_triggered_button("Toggle Season cycle", [""], () => {
-            this.change_seasons = ~this.change_seasons;
-            this.change_time = 1;
-        });
-        this.new_line();
-        this.new_line();
 
-        this.key_triggered_button("Summer", [""], () => {
-            this.change_seasons = -1;
-            this.season = 0;
-        });
-        this.key_triggered_button("Fall", [""], () => {
-            this.change_seasons = -1;
-            this.season = 1;
-        });
-        this.key_triggered_button("Winter", [""], () => {
-            this.change_seasons = -1;
-            this.season = 2;
-        });
-        this.key_triggered_button("Spring", [""], () => {
-            this.change_seasons = -1;
-            this.season = 3;
-        });
-
-        this.new_line();
-        this.new_line();
-        this.key_triggered_button("Toggle Decoration View", [""], () => {
+        this.key_triggered_button("Toggle Decoration View", ["v"], () => {
             this.free_camera = false;
             this.decoration_view = ~this.decoration_view;
         });
 
-        this.key_triggered_button("Toggle Free Camera", [""], () => {
+        this.key_triggered_button("Toggle Free Camera", ["c"], () => {
             this.free_camera = !this.free_camera;
         });
 
 
+
+
+        this.new_line();
+        this.new_line();
+
+        this.key_triggered_button("Toggle Day/Night Cycle", ["t"], () => {
+            this.change_time ^= 1;
+        });
+        this.key_triggered_button("Toggle Season cycle", ["b"], () => {
+            this.change_seasons = ~this.change_seasons;
+            this.change_time = 1;
+        });
+
+        this.key_triggered_button("Toggle midday", ["y"], () => {
+            this.change_seasons = ~this.change_seasons;
+            this.midday = !this.midday;
+            //this.sun_brightness = 5000 - (this.season * 1000);
+        });
+        this.new_line();
+        this.new_line();
+
+        this.key_triggered_button("Summer", ["u"], () => {
+            this.change_seasons = -1;
+            this.season = 0;
+        });
+        this.key_triggered_button("Fall", ["l"], () => {
+            this.change_seasons = -1;
+            this.season = 1;
+        });
+        this.key_triggered_button("Winter", ["i"], () => {
+            this.change_seasons = -1;
+            this.season = 2;
+        });
+        this.key_triggered_button("Spring", ["n"], () => {
+            this.change_seasons = -1;
+            this.season = 3;
+        });
+
+        this.new_line()
+        this.new_line()
+
+        this.key_triggered_button("Increase Brightness", ["+"], () => {
+            this.sun_brightness = (this.sun_brightness < 10000) ? this.sun_brightness + 200 : 10000;
+        });
+        this.key_triggered_button("Decrease Brightness", ["-"], () => {
+            this.sun_brightness = (this.sun_brightness > 200) ? this.sun_brightness - 200 : 0;
+        });
+
+        this.new_line()
+        this.new_line()
+
+        this.key_triggered_button("Increase Speed", ["+"], () => {
+            this.sun_brightness = (this.f < .02) ? this.f + .001 : 10000;
+        });
+        this.key_triggered_button("Decrease Speed", ["-"], () => {
+            this.sun_brightness = (this.f > 0) ? this.f - .001 : 0;
+        });
 
 
     }
@@ -318,14 +347,20 @@ export class Final extends Scene {
 
         let t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000
 
-        if (this.change_time) {
+        console.log(this.midday)
+        if (this.midday) {
+            console.log("it's midday.")
+                program_state.lights = [new Light(vec4(10, 10, 10, 1), color(1, 1, 1, 1), this.sun_brightness)];
+        }
+        else if (this.change_time) {
             this.day_night_time = this.day_night_time + 1
             this.day_night(context, program_state)
             this.amb = Math.min((Math.sin(2*Math.PI*this.f*this.day_night_time)+1.7)/2, 1)
             this.materials.texture_sky.ambient = this.amb
             this.materials.texture_grass.ambient = this.amb
 
-        } else {
+        }
+        else {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
