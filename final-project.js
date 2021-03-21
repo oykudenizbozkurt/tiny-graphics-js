@@ -349,9 +349,7 @@ export class Final extends Scene {
 
         let t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000
 
-        console.log(this.midday)
         if (this.midday) {
-            console.log("it's midday.")
                 program_state.lights = [new Light(vec4(10, 10, 10, 1), color(1, 1, 1, 1), this.sun_brightness)];
         }
         else if (this.change_time) {
