@@ -35,13 +35,12 @@ The advanced feature we chose to implement was **Bump Maps**.
 
 We created models and textures in Blender, and then created a second pseudo-texture bump map, also in Blender. This bump map was passed as a secondary texture to the GPU via the custom Bump_Map_Texture class, which extends PhongTexture. This class treats the bump map as a texture and uses the bump vectors corresponding to the texture coordinates to perturb the normals of the fragment shader. This results in more intricate-looking textures and shading without the need for additional vertices or model complexity.
 
-![House texture](./assets/Blender Files/HouseTexture_new.png) ![House bump map](./assets/Blender Files/house_bump_map2.png)
+![Plain Snowman](./snowman.png) ![Snowman bump map](./snowman_bumped.png)
 > original texture (left) vs bump map (right)
 
 ---
 
-__References__
-
+__References__ 
 
 Thanks very much to the TAs and professors for supplying the template code and library functions.
 
