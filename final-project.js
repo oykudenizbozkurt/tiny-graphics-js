@@ -75,6 +75,16 @@ export class Final extends Scene {
                 ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
                 texture: new Texture("assets/snow_clouds.jpg","NEAREST"),
             }),
+            fall_sky: new Material(new Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.9, specularity: 0.5,
+                texture: new Texture("assets/fall_clouds.jpg","NEAREST"),
+            }),
+            spring_sky: new Material(new Textured_Phong(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.9, specularity: 0.5,
+                texture: new Texture("assets/spring_clouds.jpg","NEAREST"),
+            }),
             house: new Material(new Textured_Phong(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/HouseTexture_new.png")
@@ -243,6 +253,7 @@ export class Final extends Scene {
         let ground_mat = this.materials.texture_grass;
         switch (this.season) {
             case 1:
+                sky_mat = this.materials.fall_sky;
                 ground_mat = this.materials.fall_grass;
                 break;
             case 2:
@@ -254,6 +265,7 @@ export class Final extends Scene {
                     ground_mat = this.materials.bumped_spring_grass;
                 else
                     ground_mat = this.materials.spring_grass;
+                sky_mat = this.materials.spring_sky;
 
                 break;
         }
