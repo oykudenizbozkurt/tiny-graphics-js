@@ -1,5 +1,5 @@
 import {defs, tiny} from './examples/common.js';
-import {Shape_From_File} from './ObjectLoading.js';
+import {Shape_From_File, Bump_Map_Texture, Bump_Mapped_Grass} from './ObjectLoading.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture,
@@ -29,14 +29,31 @@ export class Final extends Scene {
                 ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
                 texture: new Texture("assets/grass.jpg","NEAREST"),
             }),
+            bumped_grass: new Material(new Bump_Mapped_Grass(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
+                texture: new Texture("assets/grass.jpg","NEAREST"),
+                bump_map: new Texture("assets/grass_bump.png")
+            }),
             texture_sky: new Material(new Textured_Phong(), {
                 color: hex_color("#000000"),
                 ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
                 texture: new Texture("assets/clouds.jpg","NEAREST"),
             }),
-            house: new Material(new defs.Textured_Phong(1), {
+            bumped_sky: new Material(new Bump_Map_Texture(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
+                texture: new Texture("assets/clouds.jpg","NEAREST"),
+                bump_map: new Texture("assets/clouds_bumped.png")
+            }),
+            house: new Material(new Textured_Phong(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/HouseTexture_new.png")
+            }),
+            bumped_house: new Material(new Bump_Map_Texture(), {
+                ambient: .6, diffusivity: .8, specularity: .9,
+                texture: new Texture("assets/Blender Files/HouseTexture_new.png"),
+                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
             })
         }
         this.amb = 0.9
@@ -45,11 +62,16 @@ export class Final extends Scene {
         this.sun_position = vec4(10, 10, 10, 1);
         this.sun_brightness = 5000
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.house_material = 0;
+
     }
 
     make_control_panel() {
         this.key_triggered_button("Change Time", ["c"], () => {
             this.change_time ^= 1;
+        });
+        this.key_triggered_button("Toggle Bump Maps", ["b"], () => {
+            this.house_material = ~this.house_material;
         });
     }
 
@@ -61,7 +83,9 @@ export class Final extends Scene {
             Mat4.rotation(Math.PI / 6, 0, 1, 0)
         ).times(
             Mat4.scale(4, 4, 4)
-        ), this.materials.house.override({ambient: this.sun_brightness / 10000 + .5}));
+        ), (this.house_material
+            ? this.materials.bumped_house : this.materials.house)
+            .override({ambient: this.sun_brightness / 10000 + .5}));
     }
 
     draw_background(context, program_state) {
@@ -70,14 +94,21 @@ export class Final extends Scene {
         model_transform = model_transform.times(Mat4.scale(100,100,1))
 
         let model_transform_3 = model_transform.times(Mat4.translation(0,0,-20))
-        this.shapes.box_1.draw(context, program_state, model_transform_3, this.materials.texture_sky);
+        this.shapes.box_1.draw(context, program_state, model_transform_3,
+            (this.house_material
+                ? this.materials.bumped_sky : this.materials.texture_sky)
+                .override({ambient: this.sun_brightness / 5000 + .1})
+            );
 
         let model_transform_2 = Mat4.translation(0, -3.8, 0)
             .times(Mat4.scale(100,1,100))
             .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
 
         ;
-        this.shapes.box_1.draw(context, program_state, model_transform_2, this.materials.texture_grass);
+        this.shapes.box_1.draw(context, program_state, model_transform_2,
+            (this.house_material
+            ? this.materials.bumped_grass : this.materials.texture_grass)
+                .override({ambient: this.sun_brightness / 10000 + .5}));
     }
 
 
@@ -105,7 +136,7 @@ export class Final extends Scene {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(Mat4.translation(0, 0, -20));
+            program_state.set_camera(Mat4.translation(-1.68, -0.34, -15.35));
         }
 
         program_state.projection_transform = Mat4.perspective(
@@ -127,10 +158,6 @@ export class Final extends Scene {
         this.draw_background(context, program_state)
         this.draw_house(context, program_state)
 
-        let model_transform = Mat4.identity()
-            .times(Mat4.rotation(Math.PI / 6, 0, 1, 0))
-            .times(Mat4.scale(4, 4, 4));
-        //this.shapes.roof.draw(context, program_state, model_transform, this.materials.phong.override(hex_color("#ff0000")));
 
     }
 }

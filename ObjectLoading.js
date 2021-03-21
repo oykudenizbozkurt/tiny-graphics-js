@@ -103,85 +103,102 @@ export class Shape_From_File extends Shape {                                   /
             super.draw(context, program_state, model_transform, material);
     }
 }
+export class Bump_Map_Texture extends defs.Textured_Phong {
 
-export class HouseScene extends Scene {                           // **Obj_File_Demo** show how to load a single 3D model from an OBJ file.
-                                                                     // Detailed model files can be used in place of simpler primitive-based
-                                                                     // shapes to add complexity to a scene.  Simpler primitives in your scene
-                                                                     // can just be thought of as placeholders until you find a model file
-                                                                     // that fits well.  This demo shows the teapot model twice, with one
-    // teapot showing off the Fake_Bump_Map effect while the other has a
-    // regular texture and Phong lighting.
-    constructor() {
-        super();
-        // Load the model file:
-        this.shapes = {"house": new Shape_From_File("assets/house_updated.obj")};
+    /*vertex_glsl_code() {
+        // ********* VERTEX SHADER *********
+        return this.shared_glsl_code() + `
+                varying vec2 f_tex_coord;
+                attribute vec3 position, normal;                            
+                // Position is expressed in object coordinates.
+                attribute vec2 texture_coord;
+                
+                uniform mat4 model_transform;
+                uniform mat4 projection_camera_model_transform;
+                uniform sampler2D bump_map;
 
-        // Don't create any DOM elements to control this scene:
-        this.widget_options = {make_controls: false};
-        // Non bump mapped:
-        this.house = new Material(new defs.Textured_Phong(1), {
-            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/Blender Files/HouseTexture_new.png")
-        });
+                void main(){                                                                   
+                    // The vertex's final resting place (in NDCS):
+                    gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
+                    // The final normal vector in screen space.
+                    N = normalize( mat3( model_transform ) * normal / squared_scale);
+                    vertex_worldspace = ( model_transform * vec4( position, 1.0 ) ).xyz;
+                    // Turn the per-vertex texture coordinate into an interpolated variable.
+                    f_tex_coord = texture_coord;
+                  } `;
+    }*/
 
-        this.texture_grass = new Material(new Texture(), {
-            color: hex_color("#000000"),
-            ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
-            texture: new Texture("assets/grass.jpg","NEAREST"),
-        });
-
-        this.texture_sky = new Material(new defs.Textured_Phong(1), {
-            color: hex_color("#000000"),
-            ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
-            texture: new Texture("assets/clouds.jpg","NEAREST"),
-        });
-
-
-
-        // Bump mapped:
-        this.bumps = new Material(new defs.Fake_Bump_Map(1), {
-            color: color(.5, .5, .5, 1),
-            ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture("assets/stars.png")
-        });
+    fragment_glsl_code() {
+        // ********* FRAGMENT SHADER *********
+        // A fragment is a pixel that's overlapped by the current triangle.
+        // Fragments affect the final image or get discarded due to depth.
+        return this.shared_glsl_code() + `
+                varying vec2 f_tex_coord;
+                uniform sampler2D texture;
+                uniform sampler2D bump_map;
+        
+                void main(){
+                    // Sample the texture image in the correct place:
+                    vec4 tex_color = texture2D( texture, f_tex_coord );
+                    
+                    // get normal offset from bump map
+                    vec4 tex_bump_offset = texture2D( bump_map, f_tex_coord);
+                    
+                    // modify normals based on bump map
+                    vec3 bumped_N  = N.xyz + (tex_bump_offset.rgb - .5*vec3(1, 1, 1));
+                    
+                    if( tex_color.w < .01 ) discard;
+                                                                             // Compute an initial (ambient) color:
+                    gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                                                                             // Compute the final color with contributions from lights:
+                    gl_FragColor.xyz += phong_model_lights( normalize( bumped_N ), vertex_worldspace );
+                  } `;
     }
 
-    display(context, program_state) {
-        const t = program_state.animation_time;
+    update_GPU(context, gpu_addresses, gpu_state, model_transform, material, bump_map_material) {
+        // update_GPU(): Add a little more to the base class's version of this method.
+        super.update_GPU(context, gpu_addresses, gpu_state, model_transform, material);
 
-        program_state.set_camera(Mat4.translation(0, 0, -5));    // Locate the camera here (inverted matrix).
-        program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, 1, 500);
-        // A spinning light to show off the bump map:
-        program_state.lights = [new Light(
-            Mat4.rotation(t / 300, 1, 0, 0).times(vec4(3, 2, 10, 1)),
-            color(1, .7, .7, 1), 100000)];
+        if (material.texture && material.texture.ready) {
+            // Select texture unit 0 for the fragment shader Sampler2D uniform called "texture":
+            context.uniform1i(gpu_addresses.texture, 0);
+            // For this draw, use the texture image from correct the GPU buffer:
+            material.texture.activate(context);
 
-        this.shapes.house.draw(context, program_state, Mat4.identity()
-            .times(Mat4.rotation(Math.PI / 6, 0, 1, 0))
-                .times(Mat4.scale(4, 4, 4))
-
-            , this.house);
-
-    }
-
-    show_explanation(document_element) {
-        document_element.innerHTML += "<p>House object scene</p>";
+            // Select texture unit 0 for the fragment shader Sampler2D uniform called "texture":
+            context.uniform1i(gpu_addresses.bump_map, 1);
+            material.bump_map.activate(context, 1);
+        }
     }
 }
 
-/*class Texture_Grass extends Textured_Phong {
+
+export class Bump_Mapped_Grass extends Bump_Map_Texture {
     fragment_glsl_code() {
+        // ********* FRAGMENT SHADER *********
+        // A fragment is a pixel that's overlapped by the current triangle.
+        // Fragments affect the final image or get discarded due to depth.
         return this.shared_glsl_code() + `
-            varying vec2 f_tex_coord;
-            uniform sampler2D texture;
-            uniform float animation_time;
-            
-            void main(){
-                // Sample the texture image in the correct place:
+                varying vec2 f_tex_coord;
+                uniform sampler2D texture;
+                uniform sampler2D bump_map;
+        
+                void main(){
+                    // Sample the texture image in the correct place:
                 vec4 tex_color = texture2D( texture, vec2(f_tex_coord.x*20.0, f_tex_coord.y*20.0));
-                if( tex_color.w < .01 ) discard;
-                                                                         // Compute an initial (ambient) color:
-                gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
-                                                                         // Compute the final color with contributions from lights:
-                gl_FragColor.xyz += phong_model_lights( normalize( N ), vertex_worldspace );
-        } `;
+                    
+                    // get normal offset from bump map
+                    vec4 tex_bump_offset = texture2D( bump_map, f_tex_coord);
+                    
+                    // modify normals based on bump map
+                    vec3 bumped_N  = N.xyz + (tex_bump_offset.rgb - .5*vec3(1, 1, 1));
+                    
+                    if( tex_color.w < .01 ) discard;
+                                                                             // Compute an initial (ambient) color:
+                    gl_FragColor = vec4( ( tex_color.xyz + shape_color.xyz ) * ambient, shape_color.w * tex_color.w ); 
+                                                                             // Compute the final color with contributions from lights:
+                    gl_FragColor.xyz += phong_model_lights( normalize( bumped_N ), vertex_worldspace );
+                  } `;
     }
-}*/
+
+}
