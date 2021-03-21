@@ -43,6 +43,22 @@ export class Final extends Scene {
                 ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
                 texture: new Texture("assets/snowy_grass.jpg","NEAREST"),
             }),
+            fall_grass: new Material(new Texture_Grass(), {
+                color: hex_color("#000000"),
+                ambient: 0.9, diffusivity: 0.9, specularity: 0.1,
+                texture: new Texture("assets/fall_grass.jpg","NEAREST"),
+            }),
+            spring_grass: new Material(new Texture_Grass(), {
+                color: hex_color("#000000"),
+                ambient: 0.6, diffusivity: 0.9, specularity: 0.1,
+                texture: new Texture("assets/spring_grass.jpg","NEAREST"),
+            }),
+            bumped_spring_grass: new Material(new Bump_Mapped_Grass(), {
+            color: hex_color("#000000"),
+                ambient: 0.6, diffusivity: 0.9, specularity: 0.1,
+                texture: new Texture("assets/spring_grass.jpg","NEAREST"),
+                bump_map: new Texture("assets/spring_grass_bump.png")
+            }),
             texture_sky: new Material(new Textured_Phong(), {
                 color: hex_color("#000000"),
                 ambient: 0.9, diffusivity: 0.5, specularity: 0.5,
@@ -75,16 +91,16 @@ export class Final extends Scene {
             bumped_pumpkin: new Material(new Bump_Map_Texture(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/pumpkin.png"),
-                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+                bump_map: new Texture("assets/Blender Files/pumpkin_bump.png")
             }),
             snowman: new Material(new Textured_Phong(), {
-                ambient: .6, diffusivity: .8, specularity: .9,
+                ambient: .6, diffusivity: .3, specularity: .4,
                 texture: new Texture("assets/Blender Files/snowman.png")
             }),
             bumped_snowman: new Material(new Bump_Map_Texture(), {
-                ambient: .6, diffusivity: .8, specularity: .9,
+                ambient: .6, diffusivity: .3, specularity: .2,
                 texture: new Texture("assets/Blender Files/snowman.png"),
-                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+                bump_map: new Texture("assets/Blender Files/snowman_bump.png")
             }),
             surfboard: new Material(new Textured_Phong(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
@@ -93,7 +109,7 @@ export class Final extends Scene {
             bumped_surfboard: new Material(new Bump_Map_Texture(), {
                 ambient: .6, diffusivity: .8, specularity: .9,
                 texture: new Texture("assets/Blender Files/surfboard.png"),
-                bump_map: new Texture("assets/Blender Files/house_bump_map2.png")
+                bump_map: new Texture("assets/Blender Files/surfboard_bump.png")
             })
         }
         this.amb = 0.9
@@ -106,16 +122,59 @@ export class Final extends Scene {
 
         this.season = 0;
         this.change_time = 1;
+        this.day_shift = Math.sign((Math.sin(2*Math.PI*this.f*this.day_night_time)));
+
+        this.change_seasons = 0;
+        this.decoration_view = 0;
+        this.free_camera = true;
 
     }
 
     make_control_panel() {
-        this.key_triggered_button("Toggle Day/Night Cycle", ["c"], () => {
-            this.change_time ^= 1;
-        });
-        this.key_triggered_button("Toggle Bump Maps", ["b"], () => {
+        this.key_triggered_button("Toggle Bump Maps", [""], () => {
             this.house_material = ~this.house_material;
         });
+        this.key_triggered_button("Toggle Day/Night Cycle", [""], () => {
+            this.change_time ^= 1;
+        });
+        this.key_triggered_button("Toggle Season cycle", [""], () => {
+            this.change_seasons = ~this.change_seasons;
+            this.change_time = 1;
+        });
+        this.new_line();
+        this.new_line();
+
+        this.key_triggered_button("Summer", [""], () => {
+            this.change_seasons = -1;
+            this.season = 0;
+        });
+        this.key_triggered_button("Fall", [""], () => {
+            this.change_seasons = -1;
+            this.season = 1;
+        });
+        this.key_triggered_button("Winter", [""], () => {
+            this.change_seasons = -1;
+            this.season = 2;
+        });
+        this.key_triggered_button("Spring", [""], () => {
+            this.change_seasons = -1;
+            this.season = 3;
+        });
+
+        this.new_line();
+        this.new_line();
+        this.key_triggered_button("Toggle Decoration View", [""], () => {
+            this.free_camera = false;
+            this.decoration_view = ~this.decoration_view;
+        });
+
+        this.key_triggered_button("Toggle Free Camera", [""], () => {
+            this.free_camera = !this.free_camera;
+        });
+
+
+
+
     }
 
 
@@ -128,7 +187,7 @@ export class Final extends Scene {
             Mat4.scale(4, 4, 4)
         ), (this.house_material
             ? this.materials.bumped_house : this.materials.house)
-            .override({ambient: this.sun_brightness / 5000 + .1}));
+            .override({ambient: this.sun_brightness / 5000}));
     }
 
     draw_pumpkin(context, program_state) {
@@ -142,7 +201,7 @@ export class Final extends Scene {
             Mat4.scale(.7, .7, .7)
         ), (this.house_material
             ? this.materials.bumped_pumpkin : this.materials.pumpkin)
-            .override({ambient: this.sun_brightness / 5000 + .1}));
+            .override({ambient: this.sun_brightness / 5000}));
     }
 
     draw_snowman(context, program_state) {
@@ -156,7 +215,7 @@ export class Final extends Scene {
                 Mat4.scale(1, 1, 1)
             ), (this.house_material
             ? this.materials.bumped_snowman : this.materials.snowman)
-            .override({ambient: this.sun_brightness / 5000 + .1}));
+            .override({ambient: this.sun_brightness / 5000}));
     }
 
     draw_surfboard(context, program_state) {
@@ -170,7 +229,7 @@ export class Final extends Scene {
                 Mat4.scale(1, 1, 1)
             ), (this.house_material
             ? this.materials.bumped_surfboard : this.materials.surfboard)
-            .override({ambient: this.sun_brightness / 5000 + .1}));
+            .override({ambient: this.sun_brightness / 5000}));
     }
 
 
@@ -184,14 +243,19 @@ export class Final extends Scene {
         let ground_mat = this.materials.texture_grass;
         switch (this.season) {
             case 1:
-                ground_mat = this.materials.fall_ground;
+                ground_mat = this.materials.fall_grass;
                 break;
             case 2:
                 sky_mat = this.materials.snowy_sky;
                 ground_mat = this.materials.snowy_grass;
                 break;
             case 3:
-                ground_mat = this.materials.spring_ground;
+                if (this.house_material)
+                    ground_mat = this.materials.bumped_spring_grass;
+                else
+                    ground_mat = this.materials.spring_grass;
+
+                break;
         }
         let model_transform_3 = model_transform.times(Mat4.translation(0,0,-20))
         this.shapes.box_1.draw(context, program_state, model_transform_3,
@@ -205,6 +269,7 @@ export class Final extends Scene {
         ;
         this.shapes.box_1.draw(context, program_state, model_transform_2,
             ground_mat.override({ambient: this.sun_brightness / 5000 + .1}));
+
     }
 
 
@@ -232,7 +297,8 @@ export class Final extends Scene {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(Mat4.translation(-1.68, -0.34, -20.35));
+            program_state.set_camera(Mat4.translation(-1.68, -0.34, -16.5));
+
         }
 
         program_state.projection_transform = Mat4.perspective(
@@ -251,14 +317,58 @@ export class Final extends Scene {
             program_state.lights = [new Light(this.sun_position, color(1, 1, 1, 1), this.sun_brightness)];
         }
 
-        this.season = 0;
+        if (!this.free_camera) {
+            if (this.decoration_view){
+                switch(this.season){
+                    case 0:
+                        program_state.set_camera(Mat4.translation(-7.07, 0.53, -8.90));
+                        break;
+                    case 1:
+                        program_state.set_camera(Mat4.translation(-6, 2, -6.5));
+                        break;
+                    case 2:
+                        program_state.set_camera(Mat4.translation(-6, 1, -8.5));
+                        break;
+                    default:
+                        program_state.set_camera(Mat4.translation(-1.68, -0.34, -12.5));
+                        break;
+                }
+                //this.free_camera = true;
+            }
+            else{
+                program_state.set_camera(Mat4.translation(-1.68, -0.34, -16.5));
+                //this.free_camera = true;
+            }
+        }
+
+
+        let next_day_sign = Math.sign(Math.sin(2*Math.PI*this.f*this.day_night_time - Math.PI/2));
+        if (!this.change_seasons && this.day_shift > 0 && next_day_sign < 0){
+            this.season = (this.season + 1) % 4;
+        }
+
+        this.day_shift = Math.sign(Math.sin(2*Math.PI*this.f*this.day_night_time - Math.PI/2));
 
         this.draw_background(context, program_state)
         this.draw_house(context, program_state)
 
         //this.draw_pumpkin(context, program_state)
         //this.draw_snowman(context, program_state);
-        this.draw_surfboard(context, program_state);
+        //this.draw_surfboard(context, program_state);
+
+        switch(this.season) {
+            case 0:
+                this.draw_surfboard(context, program_state);
+                break;
+            case 1:
+                this.draw_pumpkin(context, program_state);
+                break;
+            case 2:
+                this.draw_snowman(context, program_state);
+                break;
+            default:
+                break;
+        }
 
 
 
