@@ -271,7 +271,7 @@ export class Final extends Scene {
         }
         let model_transform_3 = model_transform.times(Mat4.translation(0,0,-20))
         this.shapes.box_1.draw(context, program_state, model_transform_3,
-            sky_mat.override({ambient: this.sun_brightness / 5000 + .1}
+            sky_mat.override({ambient: this.sun_brightness / 5000 }
             ));
 
         let model_transform_2 = Mat4.translation(0, -3.8, 0)
@@ -280,7 +280,7 @@ export class Final extends Scene {
 
         ;
         this.shapes.box_1.draw(context, program_state, model_transform_2,
-            ground_mat.override({ambient: this.sun_brightness / 5000 + .1}));
+            ground_mat.override({ambient: this.sun_brightness / 5000 }));
 
     }
 
@@ -309,7 +309,7 @@ export class Final extends Scene {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             // Define the global camera and projection matrices, which are stored in program_state.
-            program_state.set_camera(Mat4.translation(-1.68, -0.34, -16.5));
+            program_state.set_camera(Mat4.translation(-1.94, -0.34, -13.87));
 
         }
 
@@ -348,7 +348,7 @@ export class Final extends Scene {
                 //this.free_camera = true;
             }
             else{
-                program_state.set_camera(Mat4.translation(-1.68, -0.34, -16.5));
+                program_state.set_camera(Mat4.translation(-1.94, -0.34, -13.87));
                 //this.free_camera = true;
             }
         }
