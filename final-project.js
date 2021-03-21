@@ -209,10 +209,10 @@ export class Final extends Scene {
         this.new_line()
 
         this.key_triggered_button("Increase Speed", ["9"], () => {
-            this.f = ((this.f < .02) ? this.f + .001 : .02);
+            this.f = ((this.f < .02) ? this.f + .0005 : .02);
         });
         this.key_triggered_button("Decrease Speed", ["0"], () => {
-            this.f = ((this.f > .005) ? (this.f - .001) : 0);
+            this.f = ((this.f > .0005) ? (this.f - .0005) : 0);
         });
 
 
