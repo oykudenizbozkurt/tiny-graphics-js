@@ -1,4 +1,4 @@
-Group Project -- Day/Night Cycle and Seasons
+Group Project -- The Four Seasons
 ---
 
 __Team Members:__
@@ -56,4 +56,4 @@ https://3dwarehouse.sketchup.com/model/3d410e24b5421ea3508a82ada06acb6b/Grass-Te
 
 *All other objects and textures were designed by us using AutoCAD and Blender.*
 
-__Music (Public domain):__
+__Music (Public domain):__ Vivaldi's Four Seasons
