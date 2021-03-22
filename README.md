@@ -5,7 +5,7 @@ __Team Members:__
 
 Mudith Mallajosyula, UID 404937201
 
-Oyku Deniz Bozkurt, UID
+Oyku Deniz Bozkurt, UID 105629052
 
 
 ---
@@ -42,7 +42,7 @@ We created models and textures in Blender, and then created a second pseudo-text
 
 __References__ 
 
-Thanks very much to the TAs and professors for supplying the template code and library functions.
+Thanks very much to the TAs and the professor for supplying the template code and library functions.
 
 __Image sources:__
 
@@ -51,6 +51,8 @@ http://jessicatregarth.com/2014/03/spring-sky/
 https://www.globaltravelerusa.com/blog/the-floods/dramatic-dark-sky-and-clouds-cloudy-sky-background-black-sky-b/
 
 https://horizon-media.s3-eu-west-1.amazonaws.com/s3fs-public/field/image/clouds-mf.jpg
+
+https://3dwarehouse.sketchup.com/model/3d410e24b5421ea3508a82ada06acb6b/Grass-Texture
 
 *All other objects and textures were designed by us using AutoCAD and Blender.*
 
